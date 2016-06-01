@@ -1,50 +1,78 @@
 <?php
-/* Attempt MySQL server connection. Assuming you are running MySQL
-server with default setting (user 'root' with no password) */
-$link = mysqli_connect("localhost", "root", "", "demo");
- 
-// Check connection
-if($link === false){
-    die("ERROR: Could not connect. " . mysqli_connect_error());
-}
-$username = mysqli_real_escape_string($link, $_POST['username']);
-$password = mysqli_real_escape_string($link, $_POST['password']);
-$email = mysqli_real_escape_string($link, $_POST['email']);
-$create = "CREATE TABLE users(person_id INT(4) NOT NULL PRIMARY KEY AUTO_INCREMENT, username CHAR(30) NOT NULL, password CHAR(20) NOT NULL, email_address VARCHAR(30) NOT NULL)";
-$insert = "INSERT INTO `demo`.`users` (`person_id`, `username`, `password`, `email_address`) VALUES ('1', '$username', '$password', '$email');";
-$select = "SELECT * FROM users";
-if(mysqli_query($link, $insert)){
-	echo 'Records added successfully!';
-}else{
-	echo 'Was not able to add records!';
-}
-if($result = mysqli_query($link, $select)){
-	if(mysqli_num_rows($result)>0){
-		echo '<table>';
-		echo '<tr>';
-		echo '<th>person_id</th>';
-		echo '<th>username</th>';
-		echo '<th>password</th>';
-		echo '<th>email_address</th>';
-		echo '</tr>';
-		while($row = mysqli_fetch_array($result)){
-			echo '<tr>';
-			echo '<td>'.$row['person_id'].'</td>';
-			echo '<td>'.$row['username'].'</td>';
-			echo '<td>'.$row['password'].'</td>';
-			echo '<td>'.$row['email_address'].'</td>';
-			echo '</tr>';
+	$host = 'localhost';
+	$user = 'root';
+	$psswrd = '';
+	$link = new mysqli($host, $user, $psswrd);
+	$dbexists = 'CREATE DATABASE IF NOT EXISTS demo';
+	// $username = mysqli_real_escape_string($_POST['username']);
+	// $lastname = mysqli_real_escape_string($_POST['password']);
+	// $email = mysqli_real_escape_string($_POST['email']);
+	$username = mysqli_real_escape_string($link, 'username');
+	$lastname = mysqli_real_escape_string($link,'password');
+	$email = mysqli_real_escape_string($link,'email');
+
+	if($link->query($dbexists)){
+		if($link->connect_error){
+			die("Connection failed: ".$link->connect_error);
+		}else{
+			echo "Connected successfully!";
+			$create = createDb();
+			if($create === FALSE){
+				echo "Could not create database! :/ Error: ".$link->error;
+			}else{
+				echo "Database created successfully!";
+				$table = createTable();
+				if($table === FALSE){
+					echo "Could not create data table: ".$link->error;
+				}else{
+					echo "Table created successfully.";
+					
+					insertToTable($username, $password, $email);
+				}
+			}
 		}
-		echo '</table>';
-		mysqli_free_result($result);
-		require('index.php');
 	}else{
-		echo 'No records matchng your query were found.';
+		insertToTable($username, $lastname, $email);
 	}
-}else{
-	echo 'ERROR: Was not able to execute $sql. '.mysqli_error($link);
-}
- 
-// Close connection
-mysqli_close($link);
+
+	function createDb(){
+		$sql = "CREATE DATABASE myDB";
+		global $link;
+		if($link->query($sql) === TRUE){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	function createTable(){
+		$sql = "CREATE TABLE myGuests (
+		id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, firstname VARCHAR(30) NOT NULL, lastname VARCHAR(30) NOT NULL, email VARCHAR(50), reg_data TIMESTAMP
+		);";
+		global $link;
+		if($link->query($sql) === TRUE){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	function insertToTable($firstname, $lastname, $email){
+		$sql = "INSERT INTO myGuests (firstname, lastname, email) VALUES ('$username', '$lastname', '$email');";
+		global $link;
+		if($link->query($sql) === TRUE){
+			echo "Records added successfully!";
+			$data = "SELECT * FROM myGuests;";
+			displayData($data);
+		}else{
+			echo "Could not add records to query: ".$link->error;
+		}
+	}
+
+	function displayData($data){
+		$result = mysqli_query($link, $data);
+
+	}
+
+	$conn->close();
 ?>
