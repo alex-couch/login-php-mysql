@@ -13,8 +13,8 @@ $username = mysqli_real_escape_string($link, $_POST['username']);
 $password = mysqli_real_escape_string($link, $_POST['password']);
 $email = mysqli_real_escape_string($link, $_POST['email']);
 // $create = "CREATE TABLE users(person_id INT(4) NOT NULL PRIMARY KEY AUTO_INCREMENT, username CHAR(30) NOT NULL, password CHAR(20) NOT NULL, email_address VARCHAR(30) NOT NULL)";
-$insert = "INSERT INTO `demo`.`users` (`username`, `password`, `email_address`) VALUES ('$username', '$password', '$email');";
-$select = "SELECT * FROM users";
+$insert = "INSERT INTO `users` (`username`, `password`, `email_address`) VALUES ('$username', '$password', '$email');";
+$select = "SELECT * FROM `users`";
 // if(mysqli_query($link, $create)){
 // 	echo 'Created table successfully.';
 // }else{
@@ -50,6 +50,19 @@ if($result = mysqli_query($link, $select)){
 	}
 }else{
 	echo 'ERROR: Was not able to execute $select. '.mysqli_error($link);
+}
+
+if(isset($_POST['action'])){
+	deleteQueries($id);
+}
+
+function deleteQueries($id_selected){
+	$delete = "DELETE * FROM `login`.`users`;";
+	if(mysqli_query($link, $sql)){
+		header('Location: index.php');
+	}else{
+		echo 'Error: deleting queries: '.mysqli_error();
+	}
 }
  
 // Close connection
