@@ -2,13 +2,11 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Database and Login</title>
-		<script type="text/javascript" src="jquery.min.js"></script>
-		<script type="text/javascript" src="actions.js"></script>
 	</head>
 	<body>
 		<?php
 			require('connection.php');
-			$sql = "SELECT * FROM information_schema.tables WHERE table_schema = `mysql` AND table_name = `users`;";
+			$sql = "SHOW TABLES LIKE 'users';";
 			if(mysqli_query($link, $sql)){
 				echo '
 				<form method="post" action="db.php">
@@ -16,14 +14,11 @@
 					<input type="password" name="password" placeholder="Password">
 					<input type="text" name="email" placeholder="E-Mail">
 					<input type="submit" name="submit" value="Submit">
+					<input type="button" name="delete" onclick="deleteQueries()" value="Delete All Queries">
 				</form>
 				';
 			}else{
-				echo '
-					<form method ="post" action="install.php">
-						<input type="submit" name="create" value="Create Table">
-					</form>
-				';
+				echo mysqli_error($link);
 			}
 		?>
 	</body>

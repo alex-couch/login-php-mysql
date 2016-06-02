@@ -8,7 +8,6 @@ server with default setting (user 'root' with no password) */
 //     die("ERROR: Could not connect. " . mysqli_connect_error());
 // }
 require('connection.php');
-
 $username = mysqli_real_escape_string($link, $_POST['username']);
 $password = mysqli_real_escape_string($link, $_POST['password']);
 $email = mysqli_real_escape_string($link, $_POST['email']);
@@ -51,17 +50,13 @@ if($result = mysqli_query($link, $select)){
 }else{
 	echo 'ERROR: Was not able to execute $select. '.mysqli_error($link);
 }
-
-if(isset($_POST['action'])){
-	deleteQueries($id);
-}
-
-function deleteQueries($id_selected){
-	$delete = "DELETE * FROM `login`.`users`;";
-	if(mysqli_query($link, $sql)){
+function deleteQueries(){
+	$delete = "DELETE * FROM `login`.`users`";
+	global $link;
+	if(mysqli_query($link, $delete)){
 		header('Location: index.php');
 	}else{
-		echo 'Error: deleting queries: '.mysqli_error();
+		echo 'Error: '.mysqli_error($link);
 	}
 }
  
